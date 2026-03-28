@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>今日の気持ちをそっと整える</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:          #0b1a2b;
+      --bg-card:     #111f30;
+      --bg-input:    #172435;
+      --border:      #243448;
+      --text-main:   #f5f7fa;
+      --text-muted:  #7a93aa;
+      --accent:      #a8c4d8;
+      --accent-soft: #ccdde8;
+      --gold:        #c8a96e;
+      --star:        #c8dae8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      background: linear-gradient(180deg, #0b1a2b 0%, #0f1e2e 60%, #111f30 100%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif;
+      font-weight: 300;
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Layout ── */
+    .screen {
+      display: none;
+      min-height: 100dvh;
+      padding-bottom: 56px;
+      animation: fadeIn .5s ease;
+    }
+    .screen.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Stars ── */
+    .stars {
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 8px;
+      color: var(--star);
+      opacity: .55;
+      padding: 28px 0 4px;
+      user-select: none;
+    }
+
+    /* ── Centered screen wrapper (used by home & saved) ── */
+    .screen-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 100dvh;
+      padding: 48px 32px;
+    }
+
+    .home-moon {
+      font-size: 60px;
+      margin-bottom: 32px;
+      filter: drop-shadow(0 0 22px rgba(180,210,235,.45));
+    }
+
+    .home-title {
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--accent-soft);
+      letter-spacing: .1em;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+
+    .home-tagline {
+      font-size: 14px;
+      color: var(--accent);
+      letter-spacing: .18em;
+      margin-bottom: 14px;
+    }
+
+    .home-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      letter-spacing: .06em;
+      line-height: 1.8;
+      margin-bottom: 48px;
+    }
+
+    .home-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+      max-width: 260px;
+    }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      background: linear-gradient(135deg, #8e7bbf 0%, #a393d3 100%);
+      color: #fff;
+      border: none;
+      border-radius: 32px;
+      padding: 16px 32px;
+      font-size: 16px;
+      font-family: inherit;
+      font-weight: 400;
+      letter-spacing: .12em;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: transform .15s, box-shadow .15s, background .2s;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #9a87c7 0%, #b0a0db 100%);
+    }
+    .btn-primary:active {
+      transform: scale(.97);
+      box-shadow: 0 2px 12px rgba(142,123,191,.2);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      padding: 13px 28px;
+      font-size: 14px;
+      font-family: inherit;
+      font-weight: 300;
+      letter-spacing: .1em;
+      cursor: pointer;
+    }
+    .btn-secondary:active { opacity: .7; }
+
+    .btn-ghost {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 8px 0;
+      letter-spacing: .06em;
+    }
+    .btn-ghost:active { opacity: .6; }
+
+    /* ── Page header ── */
+    .page-header {
+      padding: 24px 24px 0;
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .page-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: .08em;
+    }
+
+    /* ── Section title ── */
+    .section-title {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: .1em;
+      margin: 28px 0 22px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── Question card ── */
+    .question-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    .question-number {
+      font-size: 11px;
+      color: var(--gold);
+      letter-spacing: .15em;
+      margin-bottom: 8px;
+    }
+
+    .question-text {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--accent-soft);
+      line-height: 1.7;
+      margin-bottom: 14px;
+      letter-spacing: .04em;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 96px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.8;
+      padding: 12px 14px;
+      resize: vertical;
+      outline: none;
+      transition: border-color .2s;
+      -webkit-appearance: none;
+    }
+    textarea::placeholder { color: var(--text-muted); opacity: .7; }
+    textarea:focus { border-color: var(--accent); }
+
+    /* ── Save area ── */
+    .save-area {
+      margin-top: 8px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .save-note {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      letter-spacing: .04em;
+    }
+
+    /* ── Saved screen ── */
+    #screen-saved {
+      /* centering handled by .screen-center wrapper inside */
+    }
+
+    .saved-icon {
+      font-size: 56px;
+      margin-bottom: 28px;
+      animation: gentlePulse 3s ease-in-out infinite;
+    }
+
+    @keyframes gentlePulse {
+      0%, 100% { transform: scale(1);    opacity: 1; }
+      50%       { transform: scale(1.07); opacity: .82; }
+    }
+
+    .saved-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: .1em;
+      margin-bottom: 12px;
+    }
+
+    .saved-title {
+      font-size: 21px;
+      font-weight: 400;
+      color: var(--accent-soft);
+      letter-spacing: .14em;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .saved-message {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 2.5;
+      margin-bottom: 48px;
+      max-width: 290px;
+      opacity: 0;
+      animation: fadeInUp 1.6s ease forwards;
+      animation-delay: 1.4s;
+    }
+
+    .saved-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+      max-width: 240px;
+      opacity: 0;
+      animation: fadeInUp 1s ease forwards;
+      animation-delay: 2.6s;
+    }
+
+    /* ── History list ── */
+    .history-empty {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+      padding: 64px 0;
+      line-height: 2.4;
+    }
+
+    .entry-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      cursor: pointer;
+      transition: border-color .2s, transform .15s;
+    }
+    .entry-card:active {
+      transform: scale(.98);
+      border-color: var(--accent);
+    }
+
+    .entry-card-date {
+      font-size: 12px;
+      color: var(--gold);
+      letter-spacing: .1em;
+      margin-bottom: 7px;
+    }
+
+    .entry-card-preview {
+      font-size: 14px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.6;
+    }
+
+    /* ── Entry detail ── */
+    .entry-detail-date {
+      font-size: 13px;
+      color: var(--gold);
+      letter-spacing: .1em;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .entry-qa {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+    }
+
+    .entry-q {
+      font-size: 13px;
+      color: var(--accent);
+      margin-bottom: 8px;
+      letter-spacing: .04em;
+    }
+
+    .entry-a {
+      font-size: 14px;
+      color: var(--text-main);
+      line-height: 1.9;
+      word-break: break-all;
+    }
+    .entry-a.empty {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .delete-area {
+      margin-top: 32px;
+      text-align: center;
+    }
+
+    .btn-delete {
+      background: transparent;
+      border: 1px solid #5a3040;
+      color: #b07080;
+      border-radius: 24px;
+      padding: 10px 28px;
+      font-family: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .btn-delete:active { background: #3a1828; }
+
+    /* ── Breathing screen ── */
+    .breathing-orb {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(168,196,216,.35) 0%, rgba(168,196,216,.05) 70%);
+      border: 1px solid rgba(168,196,216,.25);
+      margin: 0 auto 40px;
+      animation: breathe 8s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: scale(1);    opacity: .5; box-shadow: 0 0 0   rgba(168,196,216,0); }
+      50%       { transform: scale(1.55); opacity: 1;  box-shadow: 0 0 28px rgba(168,196,216,.2); }
+    }
+
+    .breathing-intro {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--accent-soft);
+      letter-spacing: .08em;
+      line-height: 1.9;
+      margin-bottom: 20px;
+    }
+
+    .breathing-guide {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 2.4;
+      margin-bottom: 48px;
+      letter-spacing: .06em;
+    }
+
+    /* ── Body awareness screen ── */
+    .body-icon {
+      font-size: 40px;
+      margin-bottom: 32px;
+      opacity: .8;
+    }
+
+    .body-text {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--accent-soft);
+      line-height: 2;
+      letter-spacing: .06em;
+      margin-bottom: 16px;
+    }
+
+    .body-note {
+      font-size: 13px;
+      color: var(--text-muted);
+      letter-spacing: .08em;
+      margin-bottom: 48px;
+    }
+
+    /* ── Acceptance message on saved screen ── */
+    .acceptance-msg {
+      font-size: 15px;
+      color: var(--accent);
+      letter-spacing: .1em;
+      line-height: 1.9;
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeInUp 1.2s ease forwards;
+      animation-delay: 0.5s;
+    }
+
+    /* ── Opt-out buttons ── */
+    .opt-out-top {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .opt-out-bottom {
+      text-align: center;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-skip {
+      background: transparent;
+      border: none;
+      color: rgba(245,247,250,.82);
+      font-family: inherit;
+      font-size: 15px;
+      letter-spacing: .08em;
+      cursor: pointer;
+      padding: 8px 4px;
+      line-height: 1.9;
+    }
+    .btn-skip:active { opacity: .45; }
+
+    .btn-skip-underline {
+      text-decoration: underline;
+      text-decoration-color: var(--border);
+      text-underline-offset: 3px;
+    }
+
+    /* ── Skip screen ── */
+    .skip-icon {
+      font-size: 48px;
+      margin-bottom: 28px;
+    }
+
+    .skip-message {
+      font-size: 15px;
+      color: var(--accent-soft);
+      line-height: 2.4;
+      margin-bottom: 24px;
+      max-width: 290px;
+      opacity: 0;
+      animation: fadeInUp 1.4s ease forwards;
+      animation-delay: 0.4s;
+    }
+
+    .skip-supportive {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 2.3;
+      margin-bottom: 44px;
+      max-width: 270px;
+      opacity: 0;
+      animation: fadeInUp 1.2s ease forwards;
+      animation-delay: 1.4s;
+    }
+
+    .skip-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+      max-width: 240px;
+      opacity: 0;
+      animation: fadeInUp 1s ease forwards;
+      animation-delay: 2.2s;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<!-- ===== HOME ===== -->
+<div id="screen-home" class="screen active">
+  <div class="screen-center">
+    <div class="home-moon">🌙</div>
+    <h1 class="home-title">今日の気持ちを<br>そっと整える</h1>
+    <p class="home-tagline">そのままのあなたで大丈夫</p>
+    <p class="home-subtitle">ここは、今のあなたにやさしく戻る場所です</p>
+    <div class="home-buttons">
+      <button class="btn-primary" onclick="showBreathing()">はじめる</button>
+      <button class="btn-secondary" onclick="showHistory()">過去の記録を見る</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BREATHING ===== -->
+<div id="screen-breathing" class="screen">
+  <div class="screen-center">
+    <div class="breathing-orb"></div>
+    <p class="breathing-intro">
+      まずは、少しだけ<br>呼吸をしてみましょうか。
+    </p>
+    <p class="breathing-guide">
+      ゆっくり息を吐いて…<br>
+      自然に吸って…<br>
+      今この瞬間に戻ってきます。
+    </p>
+    <button class="btn-primary" onclick="showBodyAwareness()">次へ</button>
+  </div>
+</div>
+
+<!-- ===== BODY AWARENESS ===== -->
+<div id="screen-body" class="screen">
+  <div class="screen-center">
+    <div class="body-icon">🫧</div>
+    <p class="body-text">
+      今、体はどんな感じですか？<br>
+      力が入っているところはありますか？
+    </p>
+    <p class="body-note">感じるだけで大丈夫です</p>
+    <button class="btn-primary" onclick="showJournal()">気持ちを書いてみる</button>
+  </div>
+</div>
+
+<!-- ===== JOURNAL ===== -->
+<div id="screen-journal" class="screen">
+  <div class="page-header">
+    <button class="btn-ghost" onclick="showHome()">← 戻る</button>
+    <span class="page-label" id="journal-date"></span>
+  </div>
+  <div class="container">
+    <div class="stars">✦ &nbsp; ✦ &nbsp; ✦</div>
+    <h2 class="section-title">今日のきもち</h2>
+
+    <div class="opt-out-top">
+      <button class="btn-skip" onclick="showSkip('full')">
+        今日は書かなくても大丈夫 →
+      </button>
+    </div>
+
+    <div class="question-card">
+      <div class="question-number">Q 1</div>
+      <div class="question-text">今日、心に残っていることは何ですか？</div>
+      <textarea id="q1" placeholder="どんな小さなことでも、ここに…" rows="4"></textarea>
+    </div>
+
+    <div class="question-card">
+      <div class="question-number">Q 2</div>
+      <div class="question-text">そのとき、どんな気持ちがしましたか？</div>
+      <textarea id="q2" placeholder="どんな気持ちでもいいですよ…" rows="4"></textarea>
+    </div>
+
+    <div class="question-card">
+      <div class="question-number">Q 3</div>
+      <div class="question-text">今の自分に、やさしく声をかけるとしたら、どんな言葉をかけたいですか？</div>
+      <textarea id="q3" placeholder="友だちに話しかけるように…" rows="4"></textarea>
+    </div>
+
+    <div class="save-area">
+      <p class="save-note">記録はこのデバイスにのみ保存されます</p>
+      <button class="btn-primary" onclick="saveEntry()" style="width:100%;max-width:260px;">記録する</button>
+    </div>
+
+    <div class="opt-out-bottom">
+      <button class="btn-skip btn-skip-underline" onclick="showSkip('partial')">今日はここまででいい</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SAVED ===== -->
+<div id="screen-saved" class="screen">
+  <div class="screen-center">
+    <div class="saved-icon">🌸</div>
+    <p class="saved-label">今日もここまでよく過ごしてきました</p>
+    <h2 class="saved-title">そのままのあなたで大丈夫</h2>
+    <p class="acceptance-msg">どんな気持ちでも、そのままで大丈夫です</p>
+    <p class="saved-message">
+      今日のあなた…<br>
+      そのままで大丈夫。<br>
+      いろいろあったかもしれないけれど、<br>
+      1日の終わりに、自分に優しさを向けてあげましょう。<br>
+      どうぞ安心して、からだとこころを緩めてください。
+    </p>
+    <div class="saved-buttons">
+      <button class="btn-primary" onclick="showHome()">ホームへ戻る</button>
+      <button class="btn-secondary" onclick="showHistory()">記録を見る</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SKIP ===== -->
+<div id="screen-skip" class="screen">
+  <div class="screen-center">
+    <div id="skip-icon" class="skip-icon">🌙</div>
+    <p id="skip-message" class="skip-message"></p>
+    <p id="skip-supportive" class="skip-supportive"></p>
+    <div id="skip-buttons" class="skip-buttons">
+      <button class="btn-primary" onclick="showHome()">ホームへ戻る</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HISTORY LIST ===== -->
+<div id="screen-history" class="screen">
+  <div class="page-header">
+    <button class="btn-ghost" onclick="showHome()">← 戻る</button>
+    <span class="page-label">過去の記録</span>
+  </div>
+  <div class="container">
+    <div class="stars">✦ &nbsp; ✦ &nbsp; ✦</div>
+    <h2 class="section-title">これまでのきもち</h2>
+    <div id="history-list"></div>
+  </div>
+</div>
+
+<!-- ===== ENTRY DETAIL ===== -->
+<div id="screen-entry" class="screen">
+  <div class="page-header">
+    <button class="btn-ghost" onclick="showHistory()">← 一覧へ</button>
+    <span class="page-label">記録の詳細</span>
+  </div>
+  <div class="container">
+    <div class="stars">✦ &nbsp; ✦ &nbsp; ✦</div>
+    <div id="entry-content"></div>
+  </div>
+</div>
+
+<script>
+  const QUESTIONS = [
+    '今日、心に残っていることは何ですか？',
+    'そのとき、どんな気持ちがしましたか？',
+    '今の自分に、やさしく声をかけるとしたら、どんな言葉をかけたいですか？',
+  ];
+
+  const STORAGE_KEY = 'yoru_journal_entries';
+
+  // ── Storage ──────────────────────────────────────────────
+
+  function loadEntries() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    } catch {
+      return [];
+    }
+  }
+
+  function saveEntries(entries) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  }
+
+  // ── Helpers ──────────────────────────────────────────────
+
+  function formatDate(iso) {
+    const d = new Date(iso);
+    const week = ['日','月','火','水','木','金','土'][d.getDay()];
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${week}）${hh}:${mm}`;
+  }
+
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  // ── Pages ────────────────────────────────────────────────
+
+  function showHome() {
+    showScreen('screen-home');
+  }
+
+  function showBreathing() {
+    showScreen('screen-breathing');
+  }
+
+  function showSkip(type) {
+    const content = {
+      full: {
+        icon: '🌙',
+        message: '今日はここに来ただけでも十分です。<br>何も書かなくても大丈夫。<br>そのままのあなたで、安心して休んでください。',
+        supportive: '今日のあなた…<br>そのままで大丈夫。<br>いろいろあったかもしれないけれど、<br>どうぞ安心して、からだとこころを緩めてください。',
+      },
+      partial: {
+        icon: '🌸',
+        message: 'ここで終えても大丈夫。<br>今のあなたのままで十分です。<br>安心して、ゆっくり休んでください。',
+        supportive: '',
+      },
+    };
+
+    const c = content[type];
+
+    // Reset animations so they replay cleanly
+    ['#skip-message', '#skip-supportive', '#skip-buttons'].forEach(sel => {
+      const el = document.querySelector(sel);
+      if (!el) return;
+      el.style.animation = 'none';
+      el.style.opacity = '0';
+      void el.offsetHeight;
+      el.style.animation = '';
+      el.style.opacity = '';
+    });
+
+    document.getElementById('skip-icon').textContent    = c.icon;
+    document.getElementById('skip-message').innerHTML   = c.message;
+    document.getElementById('skip-supportive').innerHTML = c.supportive;
+    document.getElementById('skip-supportive').style.display = c.supportive ? '' : 'none';
+
+    showScreen('screen-skip');
+  }
+
+  function showBodyAwareness() {
+    showScreen('screen-body');
+  }
+
+  function showJournal() {
+    const d = new Date();
+    const week = ['日','月','火','水','木','金','土'][d.getDay()];
+    document.getElementById('journal-date').textContent =
+      `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${week}）`;
+
+    ['q1','q2','q3'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+
+    showScreen('screen-journal');
+  }
+
+  function saveEntry() {
+    const answers = ['q1','q2','q3'].map(id =>
+      document.getElementById(id).value.trim()
+    );
+
+    const entries = loadEntries();
+    entries.unshift({
+      id: Date.now(),
+      timestamp: new Date().toISOString(),
+      answers,
+    });
+    saveEntries(entries);
+
+    // Reset fade-in animations so they replay cleanly each time
+    ['.acceptance-msg', '.saved-message', '.saved-buttons'].forEach(sel => {
+      const el = document.querySelector(sel);
+      el.style.animation = 'none';
+      el.style.opacity = '0';
+      void el.offsetHeight; // force reflow
+      el.style.animation = '';
+      el.style.opacity = '';
+    });
+
+    showScreen('screen-saved');
+  }
+
+  function showHistory() {
+    const entries = loadEntries();
+    const list = document.getElementById('history-list');
+
+    if (entries.length === 0) {
+      list.innerHTML = `
+        <div class="history-empty">
+          🌙<br><br>
+          まだ記録がありません。<br>
+          今夜、最初のページを始めましょう。
+        </div>`;
+    } else {
+      list.innerHTML = entries.map(entry => {
+        const preview = entry.answers.find(a => a) || '（記録なし）';
+        return `
+          <div class="entry-card" onclick="showEntry(${entry.id})">
+            <div class="entry-card-date">${formatDate(entry.timestamp)}</div>
+            <div class="entry-card-preview">${escapeHtml(preview)}</div>
+          </div>`;
+      }).join('');
+    }
+
+    showScreen('screen-history');
+  }
+
+  function showEntry(id) {
+    const entry = loadEntries().find(e => e.id === id);
+    if (!entry) { showHistory(); return; }
+
+    const qas = QUESTIONS.map((q, i) => {
+      const answer = entry.answers[i] || '';
+      const cls    = answer ? '' : ' empty';
+      const text   = answer
+        ? escapeHtml(answer).replace(/\n/g, '<br>')
+        : '（記入なし）';
+      return `
+        <div class="entry-qa">
+          <div class="entry-q">${escapeHtml(q)}</div>
+          <div class="entry-a${cls}">${text}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('entry-content').innerHTML = `
+      <div class="entry-detail-date">${formatDate(entry.timestamp)}</div>
+      ${qas}
+      <div class="delete-area">
+        <button class="btn-delete" onclick="deleteEntry(${entry.id})">この記録を削除する</button>
+      </div>
+      <div style="height:32px;"></div>
+    `;
+
+    showScreen('screen-entry');
+  }
+
+  function deleteEntry(id) {
+    if (!confirm('この記録を削除してもよいですか？')) return;
+    saveEntries(loadEntries().filter(e => e.id !== id));
+    showHistory();
+  }
+</script>
+</body>
+</html>
