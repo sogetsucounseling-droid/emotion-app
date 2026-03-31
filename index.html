@@ -545,13 +545,230 @@
       animation-delay: 2.2s;
     }
 
+    /* ── Export area ── */
+    .export-area {
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .export-note {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 10px;
+      letter-spacing: .04em;
+    }
+
     /* ── Scrollbar ── */
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* ── Reminder banner ── */
+    .reminder-banner {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 20px 24px 32px;
+      background: linear-gradient(160deg, #1a2a3a 0%, #162030 100%);
+      border-top: 1px solid var(--border);
+      text-align: center;
+      animation: slideUp .6s ease;
+    }
+    .reminder-banner.visible { display: block; }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    .reminder-icon {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .reminder-msg {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--accent-soft);
+      letter-spacing: .1em;
+      line-height: 1.9;
+      margin-bottom: 16px;
+    }
+
+    .reminder-close {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 24px;
+      padding: 8px 24px;
+      font-family: inherit;
+      font-size: 13px;
+      letter-spacing: .06em;
+      cursor: pointer;
+    }
+    .reminder-close:active { opacity: .6; }
+
+    /* ── Reminder settings modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(11, 16, 28, .82);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+    }
+    .modal-overlay.visible { display: flex; }
+
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px 28px;
+      width: 100%;
+      max-width: 340px;
+      text-align: center;
+      animation: fadeIn .35s ease;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--accent-soft);
+      letter-spacing: .1em;
+      margin-bottom: 8px;
+    }
+
+    .modal-note {
+      font-size: 13px;
+      color: var(--text-muted);
+      letter-spacing: .04em;
+      margin-bottom: 24px;
+      line-height: 1.8;
+    }
+
+    .time-input {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 28px;
+      font-weight: 300;
+      letter-spacing: .08em;
+      text-align: center;
+      padding: 14px;
+      outline: none;
+      margin-bottom: 24px;
+      -webkit-appearance: none;
+      transition: border-color .2s;
+    }
+    .time-input:focus { border-color: var(--accent); }
+
+    .modal-current {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      letter-spacing: .06em;
+    }
+    .modal-current span {
+      color: var(--gold);
+    }
+
+    .modal-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-reminder-save {
+      background: linear-gradient(135deg, #8e7bbf 0%, #a393d3 100%);
+      color: #fff;
+      border: none;
+      border-radius: 28px;
+      padding: 14px;
+      font-size: 15px;
+      font-family: inherit;
+      font-weight: 400;
+      letter-spacing: .1em;
+      cursor: pointer;
+    }
+    .btn-reminder-save:active { opacity: .85; }
+
+    .btn-reminder-clear {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 13px;
+      letter-spacing: .06em;
+      cursor: pointer;
+      padding: 6px;
+    }
+    .btn-reminder-clear:active { opacity: .6; }
+
+    /* ── Reminder settings button on home ── */
+    .reminder-setting-btn {
+      margin-top: 28px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 13px;
+      letter-spacing: .08em;
+      cursor: pointer;
+      padding: 6px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .reminder-setting-btn:active { opacity: .55; }
+
+    .reminder-time-badge {
+      display: none;
+      font-size: 12px;
+      color: var(--gold);
+      background: rgba(200,169,110,.1);
+      border: 1px solid rgba(200,169,110,.25);
+      border-radius: 12px;
+      padding: 2px 10px;
+      margin-top: 6px;
+      letter-spacing: .06em;
+    }
+    .reminder-time-badge.visible { display: inline-block; }
   </style>
 </head>
 <body>
+
+<!-- ===== REMINDER BANNER ===== -->
+<div id="reminder-banner" class="reminder-banner">
+  <div class="reminder-icon">🌿</div>
+  <p class="reminder-msg">そろそろ、少しだけ<br>自分に戻る時間です</p>
+  <button class="reminder-close" onclick="dismissReminder()">そっと閉じる</button>
+</div>
+
+<!-- ===== REMINDER SETTINGS MODAL ===== -->
+<div id="reminder-modal" class="modal-overlay" onclick="closeReminderModal(event)">
+  <div class="modal-box">
+    <p class="modal-title">🕐 通知時間を設定する</p>
+    <p class="modal-note">アプリを開いたとき、設定した時刻を<br>過ぎていたらそっとお知らせします</p>
+    <input id="reminder-time-input" class="time-input" type="time" />
+    <p class="modal-current">現在の時刻: <span id="modal-current-time">--:--</span></p>
+    <div class="modal-buttons">
+      <button class="btn-reminder-save" onclick="saveReminderTime()">この時間に設定する</button>
+      <button class="btn-reminder-clear" onclick="clearReminderTime()">リマインダーをオフにする</button>
+      <button class="btn-reminder-clear" onclick="closeReminderModal()">キャンセル</button>
+    </div>
+  </div>
+</div>
 
 <!-- ===== HOME ===== -->
 <div id="screen-home" class="screen active">
@@ -564,6 +781,10 @@
       <button class="btn-primary" onclick="showBreathing()">はじめる</button>
       <button class="btn-secondary" onclick="showHistory()">過去の記録を見る</button>
     </div>
+    <button class="reminder-setting-btn" onclick="openReminderModal()">
+      🕐 通知時間を設定する
+    </button>
+    <span id="home-reminder-badge" class="reminder-time-badge"></span>
   </div>
 </div>
 
@@ -684,6 +905,10 @@
     <div class="stars">✦ &nbsp; ✦ &nbsp; ✦</div>
     <h2 class="section-title">これまでのきもち</h2>
     <div id="history-list"></div>
+    <div class="export-area">
+      <button class="btn-secondary" onclick="exportEntries()">記録をまとめて保存</button>
+      <p class="export-note">すべての記録を .txt ファイルでダウンロードします</p>
+    </div>
   </div>
 </div>
 
@@ -892,6 +1117,133 @@
     if (!confirm('この記録を削除してもよいですか？')) return;
     saveEntries(loadEntries().filter(e => e.id !== id));
     showHistory();
+  }
+
+  // ── Reminder ─────────────────────────────────────────────
+
+  const REMINDER_TIME_KEY  = 'yoru_reminder_time';
+  const REMINDER_SHOWN_KEY = 'yoru_reminder_shown_date';
+
+  function getTodayString() {
+    const d = new Date();
+    return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+  }
+
+  function checkReminder() {
+    const savedTime = localStorage.getItem(REMINDER_TIME_KEY);
+    if (!savedTime) return;
+
+    const shownDate = localStorage.getItem(REMINDER_SHOWN_KEY);
+    if (shownDate === getTodayString()) return; // already shown today
+
+    const now = new Date();
+    const [rh, rm] = savedTime.split(':').map(Number);
+    const reminderMinutes = rh * 60 + rm;
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+    if (nowMinutes >= reminderMinutes) {
+      document.getElementById('reminder-banner').classList.add('visible');
+    }
+  }
+
+  function dismissReminder() {
+    document.getElementById('reminder-banner').classList.remove('visible');
+    localStorage.setItem(REMINDER_SHOWN_KEY, getTodayString());
+  }
+
+  function openReminderModal() {
+    const saved = localStorage.getItem(REMINDER_TIME_KEY) || '';
+    document.getElementById('reminder-time-input').value = saved;
+    updateModalClock();
+    document.getElementById('reminder-modal').classList.add('visible');
+  }
+
+  function updateModalClock() {
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('modal-current-time').textContent = `${hh}:${mm}`;
+  }
+
+  function closeReminderModal(event) {
+    if (event && event.target !== document.getElementById('reminder-modal')) return;
+    document.getElementById('reminder-modal').classList.remove('visible');
+  }
+
+  function saveReminderTime() {
+    const val = document.getElementById('reminder-time-input').value;
+    if (!val) {
+      alert('時刻を選んでください');
+      return;
+    }
+    localStorage.setItem(REMINDER_TIME_KEY, val);
+    // Reset shown-today so the new time can trigger today if applicable
+    localStorage.removeItem(REMINDER_SHOWN_KEY);
+    document.getElementById('reminder-modal').classList.remove('visible');
+    updateHomeBadge();
+    checkReminder();
+  }
+
+  function clearReminderTime() {
+    localStorage.removeItem(REMINDER_TIME_KEY);
+    localStorage.removeItem(REMINDER_SHOWN_KEY);
+    document.getElementById('reminder-modal').classList.remove('visible');
+    document.getElementById('reminder-banner').classList.remove('visible');
+    updateHomeBadge();
+  }
+
+  function updateHomeBadge() {
+    const saved = localStorage.getItem(REMINDER_TIME_KEY);
+    const badge = document.getElementById('home-reminder-badge');
+    if (saved) {
+      badge.textContent = `毎日 ${saved} にお知らせ`;
+      badge.classList.add('visible');
+    } else {
+      badge.textContent = '';
+      badge.classList.remove('visible');
+    }
+  }
+
+  // ── Init ─────────────────────────────────────────────────
+
+  (function init() {
+    updateHomeBadge();
+    checkReminder();
+  })();
+
+  function exportEntries() {
+    const entries = loadEntries();
+    if (entries.length === 0) {
+      alert('まだ記録がありません。');
+      return;
+    }
+
+    const LABELS = ['今日の気持ち', '気持ち', 'やさしい言葉'];
+    const DIVIDER = '----------------------';
+
+    const text = entries.map(entry => {
+      const d = new Date(entry.timestamp);
+      const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+
+      let block = `日付: ${dateStr}　${timeStr}\n\n`;
+      LABELS.forEach((label, i) => {
+        const answer = (entry.answers && entry.answers[i]) ? entry.answers[i] : '（記入なし）';
+        block += `${label}:\n${answer}\n\n`;
+      });
+      return block.trimEnd() + '\n\n' + DIVIDER;
+    }).join('\n\n');
+
+    const header = 'そのままのあなたで大丈夫\n今日の気持ちの記録\n\n' + DIVIDER + '\n\n';
+    const blob = new Blob([header + text], { type: 'text/plain; charset=utf-8' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'journal.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   }
 </script>
 </body>
