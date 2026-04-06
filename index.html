@@ -408,18 +408,18 @@
 
     /* ── Breathing screen ── */
     .breathing-orb {
-      width: 72px;
-      height: 72px;
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(168,196,216,.35) 0%, rgba(168,196,216,.05) 70%);
-      border: 1px solid rgba(168,196,216,.25);
+      background: radial-gradient(circle, rgba(168,196,216,.6) 0%, rgba(168,196,216,.1) 70%);
+      border: 1px solid rgba(168,196,216,.4);
       margin: 0 auto 40px;
       animation: breathe 8s ease-in-out infinite;
     }
 
     @keyframes breathe {
       0%, 100% { transform: scale(1);    opacity: .5; box-shadow: 0 0 0   rgba(168,196,216,0); }
-      50%       { transform: scale(1.55); opacity: 1;  box-shadow: 0 0 28px rgba(168,196,216,.2); }
+      50% { transform: scale(1.55); opacity: 1; box-shadow: 0 0 40px rgba(168,196,216,.4); }
     }
 
     .breathing-intro {
@@ -567,6 +567,9 @@
 
     /* ── Reminder banner ── */
     .reminder-banner {
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .4s ease, transform .4s ease;
       display: none;
       position: fixed;
       bottom: 0;
@@ -579,10 +582,14 @@
       text-align: center;
       animation: slideUp .6s ease;
     }
-    .reminder-banner.visible { display: block; }
+    .reminder-banner.visible {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
 
     @keyframes slideUp {
-      from { transform: translateY(100%); opacity: 0; }
+      from { transform: translateY(10px); opacity: 0; }
       to   { transform: translateY(0);    opacity: 1; }
     }
 
@@ -655,10 +662,14 @@
     }
 
     .time-input {
+      border: 2px solid #a8c4d8;
+      border-radius: 10px;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      font-size: 16px;
       width: 100%;
       background: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: 12px;
       color: var(--text-main);
       font-family: inherit;
       font-size: 28px;
@@ -717,27 +728,36 @@
 
     /* ── Reminder settings button on home ── */
     .reminder-setting-btn {
-      margin-top: 28px;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-family: inherit;
-      font-size: 13px;
-      letter-spacing: .08em;
-      cursor: pointer;
-      padding: 6px 0;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    font-weight: 500;
+    margin-top: 28px;
+    background: rgba(168, 196, 216, 0.2);
+    border: 1px solid rgba(168, 196, 216, 0.5);
+    border-radius: 14px;
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 15px;
+    letter-spacing: .08em;
+    cursor: pointer;
+    padding: 12px 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
     .reminder-setting-btn:active { opacity: .55; }
+.reminder-setting-btn:hover {
+    background: rgba(168, 196, 216, 0.14);
+    border-color: rgba(168, 196, 216, 0.4);
+}
 
     .reminder-time-badge {
+      font-weight: 500;
+      background: rgba(200, 169, 110, 0.2);
+      border: 1px solid rgba(200, 169, 110, 0.4);
       display: none;
       font-size: 12px;
       color: var(--gold);
-      background: rgba(200,169,110,.1);
-      border: 1px solid rgba(200,169,110,.25);
+     
       border-radius: 12px;
       padding: 2px 10px;
       margin-top: 6px;
@@ -758,8 +778,9 @@
 <!-- ===== REMINDER SETTINGS MODAL ===== -->
 <div id="reminder-modal" class="modal-overlay" onclick="closeReminderModal(event)">
   <div class="modal-box">
-    <p class="modal-title">🕐 通知時間を設定する</p>
+    <p class="modal-title">🕒　通知時間を設定する</p>
     <p class="modal-note">アプリを開いたとき、設定した時刻を<br>過ぎていたらそっとお知らせします</p>
+    <p>時間を選んでください</p>
     <input id="reminder-time-input" class="time-input" type="time" />
     <p class="modal-current">現在の時刻: <span id="modal-current-time">--:--</span></p>
     <div class="modal-buttons">
@@ -776,14 +797,15 @@
     <div class="home-moon">🌙</div>
     <h1 class="home-title">今日の気持ちを<br>そっと整える</h1>
     <p class="home-tagline">そのままのあなたで大丈夫</p>
-    <p class="home-subtitle">ここは、今のあなたにやさしく戻る場所です</p>
+    <p class="home-subtitle">ただ、少しだけ呼吸してみますか？</p>
     <div class="home-buttons">
       <button class="btn-primary" onclick="showBreathing()">はじめる</button>
       <button class="btn-secondary" onclick="showHistory()">過去の記録を見る</button>
     </div>
-    <button class="reminder-setting-btn" onclick="openReminderModal()">
-      🕐 通知時間を設定する
-    </button>
+<button class="reminder-setting-btn" onclick="openReminderModal()">
+    <span class="icon">🕐</span> 通知時間を設定する
+</button>
+    
     <span id="home-reminder-badge" class="reminder-time-badge"></span>
   </div>
 </div>
@@ -810,7 +832,7 @@
     <div class="body-icon">🫧</div>
     <p class="body-text">
       今、体はどんな感じですか？<br>
-      力が入っているところはありますか？
+      力が入っているところはありませんか？
     </p>
     <p class="body-note">感じるだけで大丈夫です</p>
     <button class="btn-primary" onclick="showJournal()">気持ちを書いてみる</button>
@@ -829,7 +851,7 @@
 
     <div class="opt-out-top">
       <button class="btn-skip" onclick="showSkip('full')">
-        今日は書かなくても大丈夫 →
+        今日は書く気分じゃなくてもOKです→
       </button>
     </div>
 
@@ -866,15 +888,15 @@
 <div id="screen-saved" class="screen">
   <div class="screen-center">
     <div class="saved-icon">🌸</div>
-    <p class="saved-label">今日もここまでよく過ごしてきました</p>
+    <p class="saved-label">今日のあなたもパーフェクト</p>
     <h2 class="saved-title">そのままのあなたで大丈夫</h2>
     <p class="acceptance-msg">どんな気持ちでも、そのままで大丈夫です</p>
     <p class="saved-message">
       今日のあなた…<br>
-      そのままで大丈夫。<br>
       いろいろあったかもしれないけれど、<br>
       1日の終わりに、自分に優しさを向けてあげましょう。<br>
-      どうぞ安心して、からだとこころを緩めてください。
+      安心して体と心を優しくゆるめてあげましょう。<br>
+      明日があなたにとって素敵な一日になりますように～
     </p>
     <div class="saved-buttons">
       <button class="btn-primary" onclick="showHome()">ホームへ戻る</button>
