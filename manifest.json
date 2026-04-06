@@ -1,0 +1,15 @@
+{
+  "name": "こころノート",
+  "short_name": "こころ",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0b1e3c",
+  "theme_color": "#0b1e3c",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
