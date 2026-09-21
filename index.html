@@ -769,6 +769,18 @@
       letter-spacing: .06em;
     }
     .reminder-time-badge.visible { display: inline-block; }
+
+    .upsell-link {
+      display: inline-block;
+      margin-top: 24px;
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: .06em;
+      text-decoration: underline;
+      text-decoration-color: var(--border);
+      text-underline-offset: 3px;
+    }
+    .upsell-link:active { opacity: .6; }
   </style>
 </head>
 <body>
@@ -810,8 +822,10 @@
 <button class="reminder-setting-btn" onclick="openReminderModal()">
     <span class="icon">🕐</span> 通知時間を設定する
 </button>
-    
+
     <span id="home-reminder-badge" class="reminder-time-badge"></span>
+
+    <a class="upsell-link" href="https://sealight092-pixel.github.io/return-to-self-time/" target="_blank" rel="noopener noreferrer">もっと深く自分に戻りたい方へ →</a>
   </div>
 </div>
 
@@ -1223,7 +1237,7 @@
     const saved = localStorage.getItem(REMINDER_TIME_KEY);
     const badge = document.getElementById('home-reminder-badge');
     if (saved) {
-      badge.textContent = `毎日 ${saved} にお知らせ`;
+      badge.textContent = `${saved}以降にアプリを開くとお知らせ`;
       badge.classList.add('visible');
     } else {
       badge.textContent = '';
